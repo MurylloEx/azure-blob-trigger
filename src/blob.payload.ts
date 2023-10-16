@@ -1,4 +1,3 @@
-import { extname } from 'path';
 import { InvocationContext, StorageBlobOutput, TriggerMetadata } from '@azure/functions';
 
 export type BlobTriggerFunction = (
@@ -48,37 +47,21 @@ export class BlobTriggerResponse {
   
   private constructor(
     protected event: BlobTriggerEvent,
-    protected outputs: BlobTriggerOutput[],
-    protected connectionName: string,
-    protected destinationContainer: string,
+    protected extraOutputs: StorageBlobOutput[],
   ) {}
 
   static create(
     event: BlobTriggerEvent,
-    outputs: BlobTriggerOutput[],
-    connectionName: string,
-    destinationContainer: string,
+    extraOutputs: StorageBlobOutput[]
   ) {
-    return new BlobTriggerResponse(
-      event,
-      outputs,
-      connectionName,
-      destinationContainer,
-    );
+    return new BlobTriggerResponse(event, extraOutputs);
   }
 
-  addFile(name: string, blob: Buffer) {
-    const foundOutput = this.outputs.find(({ bindingName }) => bindingName == name);
+  addFile(bindingName: string, blob: Buffer) {
+    const foundOutput = this.extraOutputs.find(({ name }) => bindingName == name);
     
     if (foundOutput) {
-      const blobOutput: StorageBlobOutput = {
-        name: foundOutput.bindingName,
-        path: `${this.destinationContainer}/${foundOutput.path}`,
-        connection: this.connectionName,
-        type: 'blob',
-      };
-  
-      this.event.context().extraOutputs.set(blobOutput, blob);
+      this.event.context().extraOutputs.set(foundOutput, blob);
     }
 
     return this;

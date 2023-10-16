@@ -55,22 +55,18 @@ export class BlobTrigger {
       path: `${this.fromContainerName}/{path}.{ext}`,
       connection: this.connectionName,
       extraOutputs,
-      handler: (blob: Buffer, context: InvocationContext) => this.handler(blob, context, trigger),
+      handler: (blob: Buffer, context: InvocationContext) => this.handler(blob, context, extraOutputs, trigger),
     });
   }
 
   protected async handler(
     blob: Buffer, 
     context: InvocationContext, 
+    extraOutputs: StorageBlobOutput[],
     trigger: BlobTriggerFunction
   ) {
     const event = BlobTriggerEvent.create(blob, context);
-    const response = BlobTriggerResponse.create(
-      event, 
-      this.outputs, 
-      this.connectionName, 
-      this.toContainerName
-    );
+    const response = BlobTriggerResponse.create(event, extraOutputs);
 
     const isAllowedExtension = this.allowedExtensions.some((allowedExtension) => {
       return event.extension() == allowedExtension.toLowerCase();
