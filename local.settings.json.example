@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "BLOB_TRIGGER_SOURCE_CONTAINER": "incoming",
+    "BLOB_TRIGGER_DEST_CONTAINER": "processed",
+    "BLOB_TRIGGER_CONNECTION": "AzureWebJobsStorage"
+  }
+}
